@@ -1,0 +1,152 @@
+﻿﻿@{
+    ViewData["Title"] = "Game page";
+}
+<style>
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 5px;
+        width: 320px;
+        margin: 0 auto;
+    }
+
+    .cell {
+        width: 100px;
+        height: 100px;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 48px;
+        font-weight: bold;
+        border: 1px solid black;
+        cursor: pointer;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .cell.player1::after {
+        content: "X";
+        color: yellow;
+    }
+
+    .cell.player2::after {
+        content: "O";
+        color: cyan;
+    }
+
+    button {
+        display: block;
+        margin: 10px auto;
+    }
+
+    #status {
+        text-align: center;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+</style>
+<div class="text-center">
+    <h1>Tic Tac Toe</h1>
+    <div id="board" class="grid">
+        <div id="cell-0-0" class="cell" onclick="makeMove(0, 0)"></div>
+        <div id="cell-0-1" class="cell" onclick="makeMove(0, 1)"></div>
+        <div id="cell-0-2" class="cell" onclick="makeMove(0, 2)"></div>
+        <div id="cell-1-0" class="cell" onclick="makeMove(1, 0)"></div>
+        <div id="cell-1-1" class="cell" onclick="makeMove(1, 1)"></div>
+        <div id="cell-1-2" class="cell" onclick="makeMove(1, 2)"></div>
+        <div id="cell-2-0" class="cell" onclick="makeMove(2, 0)"></div>
+        <div id="cell-2-1" class="cell" onclick="makeMove(2, 1)"></div>
+        <div id="cell-2-2" class="cell" onclick="makeMove(2, 2)"></div>
+    </div>
+    <button onclick="resetGame()">Reset</button>
+    <p id="status"></p>
+</div>
+<script>
+    const board = [
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', '']
+    ];
+    let currentPlayer = 'X';
+    let gameActive = true;
+    displayCurrencPlayer(currentPlayer);
+
+    function makeMove(row, col) {
+        if (gameActive && board[row][col] === '') {
+            board[row][col] = currentPlayer;
+            const cell = document.getElementById(`cell-${row}-${col}`);
+            cell.innerText = currentPlayer;
+            cell.classList.add(`player${currentPlayer}`);
+            currentPlayer = (currentPlayer === 'X') ? 'O' : 'X';
+            displayCurrencPlayer(currentPlayer);
+            console.log(JSON.stringify(board));
+        }
+        checkTie();
+        checkWin();
+    }
+
+    function checkWin() {
+        const winningCombinations = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        for (let combination of winningCombinations) {
+            const [a, b, c] = combination;
+            const symbolA = board[Math.floor(a / 3)][a % 3];
+            const symbolB = board[Math.floor(b / 3)][b % 3];
+            const symbolC = board[Math.floor(c / 3)][c % 3];
+
+            if (symbolA && symbolA === symbolB && symbolB === symbolC) {
+                endGame('Player ' + symbolA + ' wins!');
+                return;
+            }
+        }
+    }
+
+    function checkTie() {
+        let isBoardFull = true;
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                if (board[row][col] === '') {
+                    isBoardFull = false;
+                    break;
+                }
+            }
+        }
+
+        if (isBoardFull) {
+            endGame('It\'s a tie!');
+        }
+    }
+
+    function endGame(message) {
+        gameActive = false;
+        document.getElementById('status').innerText = message;
+    }
+
+    function resetGame() {
+        board.forEach(row => {
+            row.fill('');
+        });
+        currentPlayer = 'X';
+        gameActive = true;
+        document.getElementById('status').innerText = '';
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach(cell => {
+            cell.innerText = '';
+            cell.classList.remove('playerX', 'playerO');
+        });
+    }
+
+    function displayCurrencPlayer(player) {
+        document.getElementById('status').innerText = 'Player ' + player + ' turn!';
+    }
+</script>
