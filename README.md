@@ -7,4 +7,4 @@ Aplikacja łączy się z bazą danych postawioną na AWSie, znajdują się tam r
 Przykładowym użytkownikiem jest:"
 
 email - fefeg64056@rockdian.com
-hasło - Gowniak100XD.
+hasło - 
